@@ -4,6 +4,9 @@
 
 Clone project and run `npm i` or `yarn install`
 
+
+### [Try it](https://srrmstk.github.io/tetris/)
+
 ## Ideas to improve:
 
 - [ ] Add score count
