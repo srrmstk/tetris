@@ -1,11 +1,9 @@
 import './App.css'
+import {GameField} from "./components/GameField";
 
 function App() {
-
   return (
-    <div>
-      <h1>Tetris</h1>
-    </div>
+    <GameField />
   )
 }
 
