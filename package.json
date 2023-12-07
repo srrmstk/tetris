@@ -3,13 +3,17 @@
   "private": true,
   "version": "0.0.0",
   "type": "commonjs",
+  "homepage": "https://srrmstk.github.io/tetris/",
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
+    "gh-pages": "6.1.0",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
