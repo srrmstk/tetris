@@ -17,6 +17,6 @@ Controls:
 - [x] Add score count
 - [ ] Add restart button instead of page reload
 - [ ] Add pause
-- [ ] Show next tetromino
+- [x] Show next tetromino
 - [ ] Add multiplayer (local or via p2p)
 - [ ] Improve UI
