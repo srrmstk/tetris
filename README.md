@@ -7,10 +7,16 @@ Clone project and run `npm i` or `yarn install`
 
 ### [Try it](https://srrmstk.github.io/tetris/)
 
+Controls:
+- ⬆️ rotate shape
+- ⬇️ move shape down
+- ⬅️ ➡️ move shape horizontally
+
 ## Ideas to improve:
 
-- [ ] Add score count
-- [ ] Add restart button instead of page reload c:
+- [x] Add score count
+- [ ] Add restart button instead of page reload
+- [ ] Add pause
 - [ ] Show next tetromino
-- [ ] Add multiplier (local or via p2p)
-- [ ] Improve visual
+- [ ] Add multiplayer (local or via p2p)
+- [ ] Improve UI
