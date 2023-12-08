@@ -117,7 +117,7 @@ export const GameField = observer(() => {
 
   // init game
   useEffect(() => {
-    gameControlStore.spawnRandomShape();
+    gameControlStore.initScene();
   }, []);
 
   useEffect(() => {
