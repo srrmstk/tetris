@@ -113,7 +113,7 @@ export const GameField = observer(() => {
     };
 
     renderNextShape();
-  }, [gameControlStore.currentShapeColor, gameControlStore.nextShape, gameControlStore.nextShapeColor]);
+  }, [gameControlStore.nextShape, gameControlStore.nextShapeColor]);
 
   // init game
   useEffect(() => {
