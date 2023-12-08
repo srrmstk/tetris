@@ -12,7 +12,9 @@ export class GameControlStore implements IGameControl {
   currentCol: number = 0;
   currentRow: number = Math.floor((GameControlHelper.getSceneSize().cols - 1) / 2); // center of the scene
   currentShape: number[][] = [[]];
+  nextShape: number[][] = [[]];
   currentShapeColor: string = '';
+  nextShapeColor: string = '';
   isGameOver: boolean = false;
   score: number = 0;
   tickRate: number = 500;
@@ -58,7 +60,7 @@ export class GameControlStore implements IGameControl {
     this.setScore(this.score + 100 * linesCleared);
 
     if (this.tickRate >= 100) {
-      this.setTickrate(this.tickRate - 10);
+      this.setTickRate(this.tickRate - 10);
     }
   };
 
@@ -67,13 +69,15 @@ export class GameControlStore implements IGameControl {
     const cols = GameControlHelper.getSceneSize().cols;
 
     const randomIndex = Math.floor(Math.random() * shapes.length);
-    const newShape = shapes[randomIndex];
+    const currentShape = this.nextShape;
 
-    if (this.checkIfShapeCanBePlaced(0, Math.floor((cols - newShape[0].length) / 2))) {
-      this.setCurrentShape(newShape);
-      this.setCurrentShapeColor(Colors[randomIndex]);
+    if (this.checkIfShapeCanBePlaced(0, Math.floor((cols - currentShape[0].length) / 2))) {
+      this.setCurrentShape(currentShape);
+      this.setCurrentShapeColor(this.nextShapeColor);
+      this.setNextShape(shapes[randomIndex]);
+      this.setNextShapeColor(Colors[randomIndex]);
       this.setCurrentRow(0);
-      this.setCurrentCol(Math.floor((cols - newShape[0].length) / 2));
+      this.setCurrentCol(Math.floor((cols - currentShape[0].length) / 2));
     } else {
       this.setGameOver(true);
     }
@@ -143,7 +147,7 @@ export class GameControlStore implements IGameControl {
     this.score = value;
   };
 
-  private setTickrate = (value: number) => {
+  private setTickRate = (value: number) => {
     this.tickRate = value;
   };
 
@@ -153,6 +157,10 @@ export class GameControlStore implements IGameControl {
 
   private setCurrentShape = (value: number[][]) => {
     this.currentShape = value;
+  };
+
+  private setNextShape = (value: number[][]) => {
+    this.nextShape = value;
   };
 
   private setCurrentRow = (value: number) => {
@@ -165,6 +173,10 @@ export class GameControlStore implements IGameControl {
 
   private setCurrentShapeColor = (value: string) => {
     this.currentShapeColor = value;
+  };
+
+  private setNextShapeColor = (value: string) => {
+    this.nextShapeColor = value;
   };
 
   private setGameOver = (value: boolean) => {
