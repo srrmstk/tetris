@@ -37,6 +37,16 @@ export class GameControlStore implements IGameControl {
 
   // SCENE LOGIC
 
+  initScene = () => {
+    const shapes = GameControlHelper.getFigureShapes();
+    const randomIndex = Math.floor(Math.random() * shapes.length);
+
+    this.setNextShape(shapes[randomIndex]);
+    this.setNextShapeColor(Colors[randomIndex]);
+
+    this.spawnRandomShape();
+  };
+
   placeShape = () => {
     const params = {
       scene: this.scene,
@@ -69,7 +79,7 @@ export class GameControlStore implements IGameControl {
     const cols = GameControlHelper.getSceneSize().cols;
 
     const randomIndex = Math.floor(Math.random() * shapes.length);
-    const currentShape = this.nextShape.length ? this.nextShape : shapes[randomIndex];
+    const currentShape = this.nextShape;
 
     if (this.checkIfShapeCanBePlaced(0, Math.floor((cols - currentShape[0].length) / 2))) {
       this.setCurrentShape(currentShape);
