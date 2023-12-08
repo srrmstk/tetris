@@ -28,7 +28,9 @@ export class GameControlStore implements IGameControl {
   // HIGHSCORE LOGIC
 
   saveHighScore = () => {
-    this.gameControlService.setHighScore(this.score);
+    if (this.score.toString() > this.highScore) {
+      this.gameControlService.setHighScore(this.score);
+    }
   };
 
   // SCENE LOGIC
