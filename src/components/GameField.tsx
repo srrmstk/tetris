@@ -8,12 +8,13 @@ export const GameField = observer(() => {
   const { gameControlStore } = useRootStore();
 
   const [tick, toggleTick] = useReducer(state => !state, false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const gameCanvasRef = useRef<HTMLCanvasElement>(null);
+  const nextFigureCanvasRef = useRef<HTMLCanvasElement>(null);
 
   // Effects
 
   useEffect(() => {
-    const canvas = canvasRef.current;
+    const canvas = gameCanvasRef.current;
 
     if (!canvas) {
       return;
@@ -76,6 +77,43 @@ export const GameField = observer(() => {
     gameControlStore.currentRow,
     gameControlStore.currentCol,
   ]);
+
+  useEffect(() => {
+    const canvas = nextFigureCanvasRef.current;
+
+    if (!canvas) {
+      return;
+    }
+
+    const ctx = canvas.getContext('2d');
+
+    const cellSize = GameControlHelper.getSceneSize().cellSize;
+    const shape = gameControlStore.nextShape;
+
+    const renderNextShape = () => {
+      ctx?.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < shape.length; i++) {
+        for (let j = 0; j < shape[i].length; j++) {
+          if (ctx && shape[i][j] !== 0) {
+            const x = (0.5 + j) * cellSize;
+            const y = (0.5 + i) * cellSize;
+
+            // fill a current shape cell
+            ctx.fillStyle = gameControlStore.nextShapeColor;
+            ctx.fillRect(x, y, cellSize, cellSize);
+
+            // draw a stroke around the current shape cell
+            ctx.strokeStyle = '#000'; // Black stroke color
+            ctx.lineWidth = 2; // Adjust the stroke width as needed
+            ctx.strokeRect(x, y, cellSize, cellSize);
+          }
+        }
+      }
+    };
+
+    renderNextShape();
+  }, [gameControlStore.currentShapeColor, gameControlStore.nextShape, gameControlStore.nextShapeColor]);
 
   // init game
   useEffect(() => {
@@ -152,13 +190,19 @@ export const GameField = observer(() => {
       <div style={styles.gameContainer}>
         <canvas
           style={styles.canvas}
-          ref={canvasRef}
+          ref={gameCanvasRef}
           width={GameControlHelper.getSceneSize().width}
           height={GameControlHelper.getSceneSize().height}
         />
         <div style={styles.infoContainer}>
           <h3>TOP: {gameControlStore.highScore}</h3>
           <h3>SCORE: {gameControlStore.score}</h3>
+          <h3>NEXT SHAPE:</h3>
+          <canvas
+            ref={nextFigureCanvasRef}
+            width={GameControlHelper.getSceneSize().cellSize * 5}
+            height={GameControlHelper.getSceneSize().cellSize * 3}
+          />
         </div>
       </div>
       {gameControlStore.isGameOver ? (
