@@ -3,9 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "type": "commonjs",
-  "homepage": "https://srrmstk.github.io/tetris/",
+  "homepage": "https://srrmstk.github.io/tetris",
   "scripts": {
-    "predeploy": "npm run build",
+    "predeploy": "yarn build",
     "deploy": "gh-pages -d dist",
     "dev": "vite",
     "build": "tsc && vite build",
@@ -20,6 +20,7 @@
     "react-dom": "18.2.0"
   },
   "devDependencies": {
+    "@types/node": "^20.10.4",
     "@types/react": "18.2.42",
     "@types/react-dom": "18.2.17",
     "@typescript-eslint/eslint-plugin": "6.13.2",
