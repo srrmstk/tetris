@@ -69,7 +69,7 @@ export class GameControlStore implements IGameControl {
     const cols = GameControlHelper.getSceneSize().cols;
 
     const randomIndex = Math.floor(Math.random() * shapes.length);
-    const currentShape = this.nextShape;
+    const currentShape = this.nextShape.length ? this.nextShape : shapes[randomIndex];
 
     if (this.checkIfShapeCanBePlaced(0, Math.floor((cols - currentShape[0].length) / 2))) {
       this.setCurrentShape(currentShape);
