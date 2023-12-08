@@ -16,6 +16,7 @@ export class GameControlStore implements IGameControl {
   currentShapeColor: string = '';
   nextShapeColor: string = '';
   isGameOver: boolean = false;
+  isGamePaused: boolean = false;
   score: number = 0;
   tickRate: number = 500;
   highScore: string = localStorage.getItem('highScore') || '0';
@@ -152,6 +153,12 @@ export class GameControlStore implements IGameControl {
   };
 
   // SETTERS
+
+  toggleGamePause = () => {
+    if (!this.isGameOver) {
+      this.isGamePaused = !this.isGamePaused;
+    }
+  };
 
   private setScore = (value: number) => {
     this.score = value;

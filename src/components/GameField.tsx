@@ -125,12 +125,16 @@ export const GameField = observer(() => {
       return;
     }
 
+    if (gameControlStore.isGamePaused) {
+      return;
+    }
+
     const intervalId = setInterval(() => {
       toggleTick();
     }, gameControlStore.tickRate);
 
     return () => clearInterval(intervalId);
-  }, [gameControlStore.isGameOver, gameControlStore.tickRate]);
+  }, [gameControlStore.isGameOver, gameControlStore.isGamePaused, gameControlStore.tickRate]);
 
   useEffect(() => {
     handleMoveDown();
@@ -156,22 +160,33 @@ export const GameField = observer(() => {
     gameControlStore.rotateShape();
   };
 
+  const handlePausePress = () => {
+    gameControlStore.toggleGamePause();
+  };
+
   const handleKeyDown = event => {
-    switch (event.key) {
-      case 'ArrowLeft':
-        handleMoveHorizontally(-1);
-        break;
-      case 'ArrowRight':
-        handleMoveHorizontally(1);
-        break;
-      case 'ArrowDown':
-        handleMoveDown();
-        break;
-      case 'ArrowUp':
-        handleRotateShape();
-        break;
-      default:
-        break;
+    if (event.key === 'Enter') {
+      handlePausePress();
+      return;
+    }
+
+    if (!gameControlStore.isGamePaused) {
+      switch (event.key) {
+        case 'ArrowLeft':
+          handleMoveHorizontally(-1);
+          break;
+        case 'ArrowRight':
+          handleMoveHorizontally(1);
+          break;
+        case 'ArrowDown':
+          handleMoveDown();
+          break;
+        case 'ArrowUp':
+          handleRotateShape();
+          break;
+        default:
+          break;
+      }
     }
   };
 
@@ -186,8 +201,8 @@ export const GameField = observer(() => {
   // Renders
 
   return (
-    <div>
-      <div style={styles.gameContainer}>
+    <div style={styles.gameContainer}>
+      <div style={styles.gameScene}>
         <canvas
           style={styles.canvas}
           ref={gameCanvasRef}
@@ -205,6 +220,11 @@ export const GameField = observer(() => {
           />
         </div>
       </div>
+      {gameControlStore.isGamePaused ? (
+        <div style={styles.pauseContainer}>
+          <h3 className={'blink'}>PAUSED</h3>
+        </div>
+      ) : null}
       {gameControlStore.isGameOver ? (
         <div style={styles.gameOver}>
           <h2>Game Over</h2>
@@ -227,7 +247,24 @@ const styles = {
     marginLeft: 16,
   },
   gameContainer: {
+    paddingTop: 32,
+    flex: 1,
+  },
+  gameScene: {
     display: 'flex',
     flexDirection: 'row' as const,
+    justifyContent: 'center',
+  },
+  pauseContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute' as const,
+    bottom: '50%',
+    width: '100%',
+    height: 64,
+    color: '#FFF',
+    backgroundColor: '#000',
+    alignSelf: 'center',
   },
 };
