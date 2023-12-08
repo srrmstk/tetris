@@ -38,6 +38,26 @@ export class GameControlStore implements IGameControl {
 
   // SCENE LOGIC
 
+  resetGame = () => {
+    this.saveHighScore();
+    this.setScene(
+      Array.from({ length: GameControlHelper.getSceneSize().rows }, () =>
+        Array(GameControlHelper.getSceneSize().cols).fill(0),
+      ),
+    );
+    this.setScore(0);
+    this.setCurrentShape([[]]);
+    this.setCurrentShapeColor('');
+    this.setCurrentRow(0);
+    this.setCurrentCol(0);
+    this.setGameOver(false);
+    this.initScene();
+
+    if (this.isGamePaused) {
+      this.toggleGamePause();
+    }
+  };
+
   initScene = () => {
     const shapes = GameControlHelper.getFigureShapes();
     const randomIndex = Math.floor(Math.random() * shapes.length);
