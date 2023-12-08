@@ -164,9 +164,18 @@ export const GameField = observer(() => {
     gameControlStore.toggleGamePause();
   };
 
+  const handleResetPress = () => {
+    gameControlStore.resetGame();
+  };
+
   const handleKeyDown = event => {
     if (event.key === 'Enter') {
       handlePausePress();
+      return;
+    }
+
+    if (event.key === 'r') {
+      handleResetPress();
       return;
     }
 
@@ -228,6 +237,7 @@ export const GameField = observer(() => {
       {gameControlStore.isGameOver ? (
         <div style={styles.gameOver}>
           <h2>Game Over</h2>
+          <h2>Press R to restart</h2>
         </div>
       ) : null}
     </div>
@@ -241,6 +251,8 @@ const styles = {
   },
   gameOver: {
     display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
     justifyContent: 'center',
   },
   infoContainer: {

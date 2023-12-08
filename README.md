@@ -12,12 +12,13 @@ Controls:
 - ⬇️ move shape down
 - ⬅️ ➡️ move shape horizontally
 - `Return` key to pause
+- `r` key to restart
 
 ## Ideas to improve:
 
 - [x] Add score count
-- [ ] Add restart button instead of page reload
+- [x] Add restart button instead of page reload
 - [x] Add pause
-- [x] Show next tetromino
+- [x] Show next shape
 - [ ] Add multiplayer (local or via p2p)
 - [ ] Improve UI
