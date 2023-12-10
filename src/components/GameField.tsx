@@ -1,75 +1,89 @@
-import { useEffect, useReducer, useRef } from 'react';
+import { useEffect, useMemo, useReducer, useRef } from 'react';
 import { Colors } from '../styles/Colors';
 import { observer } from 'mobx-react-lite';
 import { useRootStore } from '../RootStore';
 import { GameControlHelper } from '../logic/gameControl/helpers/GameControlHelper';
 
 export const GameField = observer(() => {
-  const { gameControlStore } = useRootStore();
+  const { gameControlStore, p2pStore } = useRootStore();
 
   const [tick, toggleTick] = useReducer(state => !state, false);
   const gameCanvasRef = useRef<HTMLCanvasElement>(null);
+  const otherPlayerGameCanvasRef = useRef<HTMLCanvasElement>(null);
   const nextFigureCanvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Effects
+  const cellSize = GameControlHelper.getSceneSize().cellSize;
 
+  const sceneSize = useMemo(
+    () => ({
+      width: GameControlHelper.getSceneSize().width,
+      height: GameControlHelper.getSceneSize().height,
+    }),
+    [],
+  );
+
+  // Scene Logic
+
+  const renderScene = (ctx: CanvasRenderingContext2D, scene: number[][]) => {
+    ctx?.clearRect(0, 0, sceneSize.width, sceneSize.height);
+
+    for (let i = 0; i < GameControlHelper.getSceneSize().rows; i++) {
+      for (let j = 0; j < GameControlHelper.getSceneSize().cols; j++) {
+        const cellValue = scene[i][j];
+
+        if (ctx && cellValue !== 0) {
+          const x = j * cellSize;
+          const y = i * cellSize;
+
+          // fill a placed shape cell
+          ctx.fillStyle = Colors[cellValue - 1];
+          ctx.fillRect(x, y, cellSize, cellSize);
+
+          // draw a stroke around the cell
+          ctx.strokeStyle = '#000';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(x, y, cellSize, cellSize);
+        }
+      }
+    }
+  };
+
+  const renderShape = (ctx: CanvasRenderingContext2D, shape: number[][], col: number, row: number, color: string) => {
+    for (let i = 0; i < shape?.length; i++) {
+      for (let j = 0; j < shape[i]?.length; j++) {
+        if (ctx && shape[i][j] !== 0) {
+          const x = (col + j) * cellSize;
+          const y = (row + i) * cellSize;
+
+          // fill a current shape cell
+          ctx.fillStyle = color;
+          ctx.fillRect(x, y, cellSize, cellSize);
+
+          // draw a stroke around the current shape cell
+          ctx.strokeStyle = '#000'; // Black stroke color
+          ctx.lineWidth = 2; // Adjust the stroke width as needed
+          ctx.strokeRect(x, y, cellSize, cellSize);
+        }
+      }
+    }
+  };
+
+  // Player scene
   useEffect(() => {
-    const canvas = gameCanvasRef.current;
+    const ctx = gameCanvasRef.current?.getContext('2d');
 
-    if (!canvas) {
+    if (!ctx) {
       return;
     }
 
-    const ctx = canvas.getContext('2d');
-
-    const cellSize = GameControlHelper.getSceneSize().cellSize;
-    const shape = gameControlStore.currentShape;
-
-    const renderScene = () => {
-      ctx?.clearRect(0, 0, canvas.width, canvas.height);
-
-      // render scene
-      for (let i = 0; i < GameControlHelper.getSceneSize().rows; i++) {
-        for (let j = 0; j < GameControlHelper.getSceneSize().cols; j++) {
-          const cellValue = gameControlStore.scene[i][j];
-
-          if (ctx && cellValue !== 0) {
-            const x = j * cellSize;
-            const y = i * cellSize;
-
-            // fill a placed shape cell
-            ctx.fillStyle = Colors[cellValue - 1];
-            ctx.fillRect(x, y, cellSize, cellSize);
-
-            // draw a stroke around the cell
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(x, y, cellSize, cellSize);
-          }
-        }
-      }
-
-      // render current falling shape
-      for (let i = 0; i < shape.length; i++) {
-        for (let j = 0; j < shape[i].length; j++) {
-          if (ctx && shape[i][j] !== 0) {
-            const x = (gameControlStore.currentCol + j) * cellSize;
-            const y = (gameControlStore.currentRow + i) * cellSize;
-
-            // fill a current shape cell
-            ctx.fillStyle = gameControlStore.currentShapeColor;
-            ctx.fillRect(x, y, cellSize, cellSize);
-
-            // draw a stroke around the current shape cell
-            ctx.strokeStyle = '#000'; // Black stroke color
-            ctx.lineWidth = 2; // Adjust the stroke width as needed
-            ctx.strokeRect(x, y, cellSize, cellSize);
-          }
-        }
-      }
-    };
-
-    renderScene();
+    renderScene(ctx, gameControlStore.scene);
+    renderShape(
+      ctx,
+      gameControlStore.currentShape,
+      gameControlStore.currentCol,
+      gameControlStore.currentRow,
+      gameControlStore.currentShapeColor,
+    );
   }, [
     gameControlStore.scene,
     gameControlStore.currentShape,
@@ -78,20 +92,37 @@ export const GameField = observer(() => {
     gameControlStore.currentCol,
   ]);
 
+  // Other player scene
   useEffect(() => {
-    const canvas = nextFigureCanvasRef.current;
+    const ctx = otherPlayerGameCanvasRef.current?.getContext('2d');
 
-    if (!canvas) {
+    if (!ctx || !gameControlStore.otherPlayerState?.scene[0]?.length) {
       return;
     }
 
-    const ctx = canvas.getContext('2d');
+    renderScene(ctx, gameControlStore.otherPlayerState.scene);
+    renderShape(
+      ctx,
+      gameControlStore.otherPlayerState?.currentShape,
+      gameControlStore.otherPlayerState?.currentCol,
+      gameControlStore.otherPlayerState?.currentRow,
+      gameControlStore.otherPlayerState?.currentShapeColor,
+    );
+  }, [gameControlStore.otherPlayerState]);
 
-    const cellSize = GameControlHelper.getSceneSize().cellSize;
+  // Player's next shape
+  useEffect(() => {
+    const nextShapeCanvas = nextFigureCanvasRef.current;
+
+    if (!nextShapeCanvas) {
+      return;
+    }
+
+    const ctx = nextShapeCanvas.getContext('2d');
     const shape = gameControlStore.nextShape;
 
     const renderNextShape = () => {
-      ctx?.clearRect(0, 0, canvas.width, canvas.height);
+      ctx?.clearRect(0, 0, nextShapeCanvas.width, nextShapeCanvas.height);
 
       for (let i = 0; i < shape.length; i++) {
         for (let j = 0; j < shape[i].length; j++) {
@@ -115,10 +146,13 @@ export const GameField = observer(() => {
     renderNextShape();
   }, [gameControlStore.nextShape, gameControlStore.nextShapeColor]);
 
-  // init game
+  // Game Logic
+
   useEffect(() => {
-    gameControlStore.initScene();
-  }, []);
+    if (p2pStore.connection) {
+      gameControlStore.initScene();
+    }
+  }, [p2pStore.connection]);
 
   useEffect(() => {
     if (gameControlStore.isGameOver) {
@@ -137,6 +171,16 @@ export const GameField = observer(() => {
   }, [gameControlStore.isGameOver, gameControlStore.isGamePaused, gameControlStore.tickRate]);
 
   useEffect(() => {
+    p2pStore.sendMessage({
+      otherPlayer: {
+        scene: gameControlStore.scene,
+        currentShape: gameControlStore.currentShape,
+        currentCol: gameControlStore.currentCol,
+        currentRow: gameControlStore.currentRow,
+        currentShapeColor: gameControlStore.currentShapeColor,
+        score: gameControlStore.score,
+      },
+    });
     handleMoveDown();
   }, [tick]);
 
@@ -212,20 +256,20 @@ export const GameField = observer(() => {
   return (
     <div style={styles.gameContainer}>
       <div style={styles.gameScene}>
-        <canvas
-          style={styles.canvas}
-          ref={gameCanvasRef}
-          width={GameControlHelper.getSceneSize().width}
-          height={GameControlHelper.getSceneSize().height}
-        />
+        <canvas style={styles.canvas} ref={gameCanvasRef} width={sceneSize.width} height={sceneSize.height} />
         <div style={styles.infoContainer}>
           <h3>TOP: {gameControlStore.highScore}</h3>
           <h3>SCORE: {gameControlStore.score}</h3>
+          <h3>OTHER PLAYER SCORE: {gameControlStore.otherPlayerState.score}</h3>
           <h3>NEXT SHAPE:</h3>
+          <canvas ref={nextFigureCanvasRef} width={cellSize * 5} height={cellSize * 3} />
+        </div>
+        <div style={{ marginLeft: 16 }}>
           <canvas
-            ref={nextFigureCanvasRef}
-            width={GameControlHelper.getSceneSize().cellSize * 5}
-            height={GameControlHelper.getSceneSize().cellSize * 3}
+            style={styles.canvas}
+            ref={otherPlayerGameCanvasRef}
+            width={sceneSize.width}
+            height={sceneSize.height}
           />
         </div>
       </div>
@@ -257,6 +301,8 @@ const styles = {
   },
   infoContainer: {
     marginLeft: 16,
+    minWidth: 260,
+    marginRight: 16,
   },
   gameContainer: {
     paddingTop: 32,

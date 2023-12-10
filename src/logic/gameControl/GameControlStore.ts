@@ -1,4 +1,4 @@
-import { IGameControl } from './types/GameControlTypes';
+import { IGameControl, IOtherPlayerState } from './types/GameControlTypes';
 import { GameControlHelper } from './helpers/GameControlHelper';
 import { makeAutoObservable } from 'mobx';
 import { Colors } from '../../styles/Colors';
@@ -21,6 +21,15 @@ export class GameControlStore implements IGameControl {
   tickRate: number = 500;
   highScore: string = localStorage.getItem('highScore') || '0';
 
+  otherPlayerState: IOtherPlayerState = {
+    scene: [[]],
+    currentShape: [[]],
+    currentRow: 0,
+    currentCol: 0,
+    currentShapeColor: '',
+    score: 0,
+  };
+
   gameControlService: GameControlService;
 
   constructor() {
@@ -39,7 +48,6 @@ export class GameControlStore implements IGameControl {
   // SCENE LOGIC
 
   resetGame = () => {
-    this.saveHighScore();
     this.setScene(
       Array.from({ length: GameControlHelper.getSceneSize().rows }, () =>
         Array(GameControlHelper.getSceneSize().cols).fill(0),
@@ -51,7 +59,16 @@ export class GameControlStore implements IGameControl {
     this.setCurrentRow(0);
     this.setCurrentCol(0);
     this.setGameOver(false);
+    this.setTickRate(500);
     this.initScene();
+    this.setOtherPlayerState({
+      scene: [[]],
+      score: 0,
+      currentShapeColor: '',
+      currentShape: [[]],
+      currentRow: 0,
+      currentCol: 0,
+    });
 
     if (this.isGamePaused) {
       this.toggleGamePause();
@@ -110,6 +127,7 @@ export class GameControlStore implements IGameControl {
       this.setCurrentRow(0);
       this.setCurrentCol(Math.floor((cols - currentShape[0].length) / 2));
     } else {
+      this.saveHighScore();
       this.setGameOver(true);
     }
   };
@@ -180,6 +198,14 @@ export class GameControlStore implements IGameControl {
     }
   };
 
+  setOtherPlayerState = (value: IOtherPlayerState) => {
+    this.otherPlayerState = value;
+  };
+
+  setGameOver = (value: boolean) => {
+    this.isGameOver = value;
+  };
+
   private setScore = (value: number) => {
     this.score = value;
   };
@@ -214,9 +240,5 @@ export class GameControlStore implements IGameControl {
 
   private setNextShapeColor = (value: string) => {
     this.nextShapeColor = value;
-  };
-
-  private setGameOver = (value: boolean) => {
-    this.isGameOver = value;
   };
 }

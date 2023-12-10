@@ -20,5 +20,9 @@ Controls:
 - [x] Add restart button instead of page reload
 - [x] Add pause
 - [x] Show next shape
-- [ ] Add multiplayer (local or via p2p)
+- [x] Add multiplayer (local or via p2p)
+- [ ] Sync pause between peers
+- [ ] Sync restart between peers
+- [ ] Sync game over between peers
+- [ ] Make invite via url
 - [ ] Improve UI
