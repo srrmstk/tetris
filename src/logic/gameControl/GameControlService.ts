@@ -3,7 +3,9 @@ import { IGameControl } from './types/GameControlTypes';
 import { GameControlHelper } from './helpers/GameControlHelper';
 
 export class GameControlService {
-  placeShape = (params: Omit<IGameControl, 'isGameOver'>) => {
+  placeShape = (
+    params: Pick<IGameControl, 'scene' | 'currentShape' | 'currentRow' | 'currentCol' | 'currentShapeColor'>,
+  ) => {
     const newScene = [...params.scene];
 
     for (let i = 0; i < params.currentShape.length; i++) {

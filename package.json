@@ -16,8 +16,10 @@
     "gh-pages": "6.1.0",
     "mobx": "6.12.0",
     "mobx-react-lite": "4.0.5",
+    "peerjs": "^1.5.2",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/node": "^20.10.4",
