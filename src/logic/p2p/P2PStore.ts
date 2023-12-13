@@ -1,14 +1,13 @@
-import Peer from 'peerjs';
+import Peer, { DataConnection } from 'peerjs';
 import { makeAutoObservable } from 'mobx';
-import { v4 as uuid } from 'uuid';
 
 export class P2PStore {
-  peer: Peer;
-  connection: any;
+  peer: Peer = new Peer();
+  connection: DataConnection | null = null;
+  uuid: string = '';
 
   constructor() {
     makeAutoObservable(this);
-    this.peer = new Peer();
   }
 
   sendMessage = (data: any) => {
@@ -18,10 +17,17 @@ export class P2PStore {
   // SETTERS
 
   setPeer = () => {
-    this.peer = new Peer(uuid());
+    this.peer = new Peer();
+    this.peer.on('open', id => {
+      this.setUuid(id);
+    });
   };
 
   connectToOtherPeer = (id: string) => {
     this.connection = this.peer.connect(id);
+  };
+
+  private setUuid = (value: string) => {
+    this.uuid = value;
   };
 }

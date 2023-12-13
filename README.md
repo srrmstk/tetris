@@ -1,6 +1,6 @@
 # Simple Tetris in React
 
-### Install
+w### Installation
 
 Clone project and run `npm i` or `yarn install`
 

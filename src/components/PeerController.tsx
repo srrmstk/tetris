@@ -37,8 +37,8 @@ export const PeerController = observer(() => {
 
   const handleSetOtherPlayerId = () => {
     p2pStore.connectToOtherPeer(peerId);
-    p2pStore.connection.on('open', () => {
-      p2pStore.connection.send({ peerId: p2pStore.peer.id });
+    p2pStore.connection?.on('open', () => {
+      p2pStore.connection?.send({ peerId: p2pStore.peer.id });
     });
   };
 
@@ -48,7 +48,7 @@ export const PeerController = observer(() => {
 
   return (
     <div>
-      <h2>Your peer id: {p2pStore.peer.id}</h2>
+      <h2>Your peer id: {p2pStore.uuid}</h2>
       <input onChange={event => handleSetPeerId(event.target.value)} value={peerId} />
       <button onClick={handleSetOtherPlayerId}>Set other player ID and start the game</button>
     </div>
